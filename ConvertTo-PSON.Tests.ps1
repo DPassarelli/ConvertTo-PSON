@@ -23,8 +23,12 @@ function Compare-HashTables {
         if ($a.Keys.Count -gt 0) {
             foreach ($key in $a.Keys) {
                 try {
-                    $valueA = $a.Keys.$key
-                    $valueB = $b.Keys.$key # if `$b` does not contain the same keys `$a`, this should throw an exception
+                    $valueA = $a.$key
+                    $valueB = $b.$key # if `$b` does not contain the same keys `$a`, this should throw an exception
+
+                    # Write-Host "Key: $key"
+                    # Write-Host "A: $valueA"
+                    # Write-Host "B: $valueB"
 
                     # same type?
                     if (-not $valueA.GetType().Equals($valueB.GetType())) {
@@ -32,11 +36,19 @@ function Compare-HashTables {
                     }
 
                     # same value?
-                    if (-not $valueA.Equals($valueB)) {
+                    if ($valueA.GetType().Name -eq "hashtable") {
+                        if (-not (Compare-HashTables $valueA $valueB)) {
+                            Write-Host "not equal"
+                            return $false
+                        }
+                    }
+                    elseif (-not $valueA.Equals($valueB)) {
                         return $false
                     }
                 }
                 catch {
+                    # Write-Host "exception:"
+                    # Write-Host $_.Exception.Message
                     return $false
                 }
             }
@@ -49,10 +61,6 @@ function Compare-HashTables {
 
     return $true
 }
-
-# Compare-HashTables @{} @{}
-# Compare-HashTables @{ key1="value1"; key2="value2"; } @{ key1="value1"; key2="value2"; }
-# Compare-HashTables @{ key1="value1"; key2="123"; } @{ key1="value1"; key2=123; }
 
 # And now, the tests...
 #
@@ -97,9 +105,53 @@ Describe "ConvertTo-PSON" {
                     }
 
                     $returnValue = ConvertTo-PSON $expected
-                    $actual = Invoke-Expression $returnValue
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
 
-                    { Compare-HashTables $expected $actual } | Should -BeExactly $true
+                    $actual | Should -BeExactly $true
+                }
+            }
+
+            Context "with mixed values" {
+                It "must return a string value that accurately represents the input parameter with a string and integer" {
+                    $expected = @{
+                        key1 = "value1"
+                        key2 = 123
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter with a string and decimal" {
+                    $expected = @{
+                        key1 = "value1"
+                        key2 = 123
+                        key3 = 123.5
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter with a string and nested hashtable" {
+                    $expected = @{
+                        key1 = "value1"
+                        key2 = 123
+                        key3 = 123.5
+                        key4 = @{
+                            subkey1 = "subval1"
+                            subkey2 = 123
+                        }
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
                 }
             }
         }

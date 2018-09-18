@@ -10,3 +10,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 * Ability to serialize `Hashtables` with depth of 1, and values of type `System.String`.
+* Ability to serialize nested `Hashtables`, and values of type `System.Int32` and `System.Double`.

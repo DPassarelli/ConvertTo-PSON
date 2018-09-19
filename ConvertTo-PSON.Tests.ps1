@@ -170,6 +170,28 @@ Describe "ConvertTo-PSON" {
 
                     $actual | Should -BeExactly $true
                 }
+
+                It "must return a string value that accurately represents the input parameter with boolean value (true)" {
+                    $expected = @{
+                        key1 = $true
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter with boolean value (false)" {
+                    $expected = @{
+                        key1 = $false
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
             }
         }
     }

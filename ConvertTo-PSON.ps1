@@ -95,6 +95,15 @@ function ConvertTo-PSON {
                     $output.Append($nestedTable) | Out-Null
                 }
 
+                "boolean" {
+                    if ($value) {
+                        $output.Append("`$true") | Out-Null
+                    }
+                    else {
+                        $output.Append("`$false") | Out-Null
+                    }
+                }
+
                 default {
                     throw "Unable to serialize type [$typeName]"
                 }

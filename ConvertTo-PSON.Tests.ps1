@@ -30,6 +30,11 @@ function Compare-HashTables {
                     # Write-Host "A: $valueA"
                     # Write-Host "B: $valueB"
 
+                    # null?
+                    if ($valueA -eq $null) {
+                        return ($valueB -eq $null)
+                    }
+
                     # same type?
                     if (-not $valueA.GetType().Equals($valueB.GetType())) {
                         return $false
@@ -124,7 +129,7 @@ Describe "ConvertTo-PSON" {
                     $actual | Should -BeExactly $true
                 }
 
-                It "must return a string value that accurately represents the input parameter with a string and decimal" {
+                It "must return a string value that accurately represents the input parameter with a string, integer, and decimal" {
                     $expected = @{
                         key1 = "value1"
                         key2 = 123
@@ -137,7 +142,7 @@ Describe "ConvertTo-PSON" {
                     $actual | Should -BeExactly $true
                 }
 
-                It "must return a string value that accurately represents the input parameter with a string and nested hashtable" {
+                It "must return a string value that accurately represents the input parameter with a string, integer, decimal and nested hashtable" {
                     $expected = @{
                         key1 = "value1"
                         key2 = 123
@@ -146,6 +151,18 @@ Describe "ConvertTo-PSON" {
                             subkey1 = "subval1"
                             subkey2 = 123
                         }
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter with a string and null value" {
+                    $expected = @{
+                        key1 = "value1"
+                        key2 = $null
                     }
 
                     $returnValue = ConvertTo-PSON $expected

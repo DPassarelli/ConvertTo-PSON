@@ -70,28 +70,34 @@ function ConvertTo-PSON {
         $output.Append("=") | Out-Null
 
         $value = $Source.$key
-        $typeName = $value.GetType().Name
 
-        switch ($typeName) {
-            "string" {
-                $output.Append("""$value""") | Out-Null
-            }
+        if ($value -eq $null) {
+            $output.Append("`$null") | Out-Null
+        }
+        else {
+            $typeName = $value.GetType().Name
 
-            "int32" {
-                $output.Append($value) | Out-Null
-            }
+            switch ($typeName) {
+                "string" {
+                    $output.Append("""$value""") | Out-Null
+                }
 
-            "double" {
-                $output.Append($value) | Out-Null
-            }
+                "int32" {
+                    $output.Append($value) | Out-Null
+                }
 
-            "hashtable" {
-                $nestedTable = (ConvertTo-PSON $value)
-                $output.Append($nestedTable) | Out-Null
-            }
+                "double" {
+                    $output.Append($value) | Out-Null
+                }
 
-            default {
-                throw "Cannot serialize non-value types ($typeName)."
+                "hashtable" {
+                    $nestedTable = (ConvertTo-PSON $value)
+                    $output.Append($nestedTable) | Out-Null
+                }
+
+                default {
+                    throw "Unable to serialize type [$typeName]"
+                }
             }
         }
 
@@ -99,6 +105,8 @@ function ConvertTo-PSON {
     }
 
     $output.Append("}") | Out-Null
+
+    # Write-Host $output.ToString()
 
     $output.ToString()
 }

@@ -1,4 +1,4 @@
-#Requires -Version 2
+#Requires -Version 5
 
 <#
     .SYNOPSIS
@@ -37,8 +37,6 @@
 function ConvertTo-PSON {
     [CmdletBinding()]
     param(
-        # The name of the script calling this function. Usually just the value
-        # of `$MyInvocation.MyCommand.Name`, truncated and upper-cased.
         [Parameter(Position=0)]
         [Hashtable]$Source
     )
@@ -90,11 +88,6 @@ function ConvertTo-PSON {
                     $output.Append($value) | Out-Null
                 }
 
-                "hashtable" {
-                    $nestedTable = (ConvertTo-PSON $value)
-                    $output.Append($nestedTable) | Out-Null
-                }
-
                 "boolean" {
                     if ($value) {
                         $output.Append("`$true") | Out-Null
@@ -108,6 +101,11 @@ function ConvertTo-PSON {
                     $output.Append("[datetime]""") | Out-Null
                     $output.Append($value.ToString("O")) | Out-Null
                     $output.Append("""") | Out-Null
+                }
+
+                "hashtable" {
+                    $nestedTable = (ConvertTo-PSON $value)
+                    $output.Append($nestedTable) | Out-Null
                 }
 
                 default {

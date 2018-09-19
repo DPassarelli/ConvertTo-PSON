@@ -103,11 +103,90 @@ Describe "ConvertTo-PSON" {
         }
 
         Context "non-nested Hashtable" {
-            Context "with only string values" {
-                It "must return a string value that accurately represents the input parameter" {
+            Context "with only a single value type" {
+                It "must return a string value that accurately represents the input parameter containing a string" {
                     $expected = @{
                         key1 = "value1"
-                        key2 = "value2"
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing an integer" {
+                    $expected = @{
+                        key1 = 123
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a decimal" {
+                    $expected = @{
+                        key1 = 3.14159
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a null value" {
+                    $expected = @{
+                        key1 = $null
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a boolean value (true)" {
+                    $expected = @{
+                        key1 = $true
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a boolean value (false)" {
+                    $expected = @{
+                        key1 = $false
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a datetime value" {
+                    $expected = @{
+                        key1 = (Get-Date)
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter containing a hashtable value" {
+                    $expected = @{
+                        key1 = @{
+                            subkey1 = "subval1"
+                            subkey2 = 123
+                        }
                     }
 
                     $returnValue = ConvertTo-PSON $expected
@@ -117,7 +196,7 @@ Describe "ConvertTo-PSON" {
                 }
             }
 
-            Context "with mixed values" {
+            Context "with mixed value types" {
                 It "must return a string value that accurately represents the input parameter with a string and integer" {
                     $expected = @{
                         key1 = "value1"
@@ -134,7 +213,7 @@ Describe "ConvertTo-PSON" {
                     $expected = @{
                         key1 = "value1"
                         key2 = 123
-                        key3 = 123.5
+                        key3 = 3.14159
                     }
 
                     $returnValue = ConvertTo-PSON $expected
@@ -147,56 +226,11 @@ Describe "ConvertTo-PSON" {
                     $expected = @{
                         key1 = "value1"
                         key2 = 123
-                        key3 = 123.5
+                        key3 = 3.14159
                         key4 = @{
                             subkey1 = "subval1"
                             subkey2 = 123
                         }
-                    }
-
-                    $returnValue = ConvertTo-PSON $expected
-                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
-
-                    $actual | Should -BeExactly $true
-                }
-
-                It "must return a string value that accurately represents the input parameter with a string and null value" {
-                    $expected = @{
-                        key1 = "value1"
-                        key2 = $null
-                    }
-
-                    $returnValue = ConvertTo-PSON $expected
-                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
-
-                    $actual | Should -BeExactly $true
-                }
-
-                It "must return a string value that accurately represents the input parameter with boolean value (true)" {
-                    $expected = @{
-                        key1 = $true
-                    }
-
-                    $returnValue = ConvertTo-PSON $expected
-                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
-
-                    $actual | Should -BeExactly $true
-                }
-
-                It "must return a string value that accurately represents the input parameter with boolean value (false)" {
-                    $expected = @{
-                        key1 = $false
-                    }
-
-                    $returnValue = ConvertTo-PSON $expected
-                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
-
-                    $actual | Should -BeExactly $true
-                }
-
-                It "must return a string value that accurately represents the input parameter with datetime value" {
-                    $expected = @{
-                        key1 = (Get-Date)
                     }
 
                     $returnValue = ConvertTo-PSON $expected

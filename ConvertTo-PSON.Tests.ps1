@@ -11,7 +11,8 @@ Set-StrictMode -Version Latest
 [String]$SCRIPT_UNDER_TEST = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace "\.Tests\.", "."
 . "$(Join-Path $PSScriptRoot $SCRIPT_UNDER_TEST)"
 
-# Helper function to do a deep equality check on Hashtables.
+# Helper function to do a deep equality check on Hashtables. I created this b/c
+# this does not seem to be built into Pester.
 #
 function Compare-HashTables {
     param(
@@ -185,6 +186,17 @@ Describe "ConvertTo-PSON" {
                 It "must return a string value that accurately represents the input parameter with boolean value (false)" {
                     $expected = @{
                         key1 = $false
+                    }
+
+                    $returnValue = ConvertTo-PSON $expected
+                    $actual = Compare-HashTables $expected (Invoke-Expression $returnValue)
+
+                    $actual | Should -BeExactly $true
+                }
+
+                It "must return a string value that accurately represents the input parameter with datetime value" {
+                    $expected = @{
+                        key1 = (Get-Date)
                     }
 
                     $returnValue = ConvertTo-PSON $expected

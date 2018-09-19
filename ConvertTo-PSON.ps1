@@ -104,6 +104,12 @@ function ConvertTo-PSON {
                     }
                 }
 
+                "datetime" {
+                    $output.Append("[datetime]""") | Out-Null
+                    $output.Append($value.ToString("O")) | Out-Null
+                    $output.Append("""") | Out-Null
+                }
+
                 default {
                     throw "Unable to serialize type [$typeName]"
                 }
@@ -115,7 +121,7 @@ function ConvertTo-PSON {
 
     $output.Append("}") | Out-Null
 
-    # Write-Host $output.ToString()
+    Write-Verbose "ConvertTo-PSON output: $($output.ToString())"
 
     $output.ToString()
 }

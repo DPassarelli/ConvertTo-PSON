@@ -5,10 +5,6 @@
     This function tests whether the specified configuration file (PSD1) contains
     all of the required fields.
 
-    .PARAMETERS
-
-    .EXAMPLE
-
     .NOTES
     This code adheres to the style guidelines published at
     https://poshcode.gitbooks.io/powershell-practice-and-style/

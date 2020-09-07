@@ -2,8 +2,7 @@
 
 Converts a PowerShell `Hashtable` object to a PSON-formatted string.
 
-[![Build Status](https://img.shields.io/appveyor/build/DPassarelli/convertto-pson/master?logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/convertto-pson)
-
+[![Build status](https://ci.appveyor.com/api/projects/status/rw9x40c4lb89we2k?svg=true)](https://ci.appveyor.com/project/DPassarelli/convertto-pson)
 
 ## Usage
 
